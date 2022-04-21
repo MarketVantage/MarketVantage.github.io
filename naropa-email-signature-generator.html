@@ -1,39 +1,48 @@
 <html>
 <head>
+<meta name="robots" content="noindex">
+<title>Naropa Email Signature Generator</title>
 </head>
-<body>
+<body style="font-family: arial; padding: 20px 60px; background: #f8f8f8">
 <h1>Naropa Email Signature Generator</h1>
 <h3>Created by Market Vantage, LLC</h3>
 Use the form below to input an individual's information. Copy and paste the code below to use in the email signature editor in SharpSpring and other platforms.<br/><br/>
-**If any field contains the '+' plus sign, this editor will remove it. ***
+<b><font color="red">If any field contains the '+' plus sign, this editor will remove it. ***</b><br/><br/>
+<b>Check for any spaces before or after values when you copy/paste information before generating code</b></font><br/><br/>
 <form action="" method="get">
 <div class="rendered-form">
     <div class="formbuilder-text form-group field-shortname">
         <label for="shortname" class="formbuilder-text-label">Short Name<span class="formbuilder-required">*</span></label>
-        <input type="text" placeholder="Short Name IE First Name" class="shortname" name="shortname" access="false" value="Short Name" id="shortname" required="required" aria-required="true">
+        <input type="text" placeholder="Short Name IE First Name" class="shortname" name="shortname" access="false" value="" id="shortname" required="required" aria-required="true">
     </div>
+	<br/>
     <div class="formbuilder-text form-group field-fullname">
         <label for="fullname" class="formbuilder-text-label">Full Name<span class="formbuilder-required">*</span></label>
-        <input type="text" placeholder="Full name" class="fullname" name="fullname" access="false" value="Full Name" id="fullname" required="required" aria-required="true">
+        <input type="text" placeholder="Full name" class="fullname" name="fullname" access="false" value="" id="fullname" required="required" aria-required="true">
     </div>
+	<br/>
     <div class="formbuilder-text form-group field-jobtitle">
         <label for="jobtitle" class="formbuilder-text-label">Job Title<span class="formbuilder-required">*</span></label>
-        <input type="text" placeholder="Job Title" class="jobtitle" name="jobtitle" access="false" value="Job Title" id="jobtitle" required="required" aria-required="true">
+        <input type="text" placeholder="Job Title" class="jobtitle" name="jobtitle" access="false" value="" id="jobtitle" required="required" aria-required="true">
     </div>
+	<br/>
     <div class="formbuilder-text form-group field-phone">
         <label for="phone" class="formbuilder-text-label">Phone Number<span class="formbuilder-required">*</span></label>
-        <input type="text" placeholder="Phone Number" class="phone" name="phone" access="false" value="Phone Number" id="phone" required="required" aria-required="true">
+        <input type="text" placeholder="Phone Number" class="phone" name="phone" access="false" value="" id="phone" required="required" aria-required="true">
     </div>
+	<br/>
     <div class="formbuilder-text form-group field-email">
         <label for="email" class="formbuilder-text-label">Email<span class="formbuilder-required">*</span></label>
-        <input type="text" placeholder="Email@site.com" class="email" name="email" access="false" value="Email@site.com" id="email" required="required" aria-required="true">
+        <input type="text" placeholder="Email@site.com" class="email" name="email" access="false" value="" id="email" required="required" aria-required="true">
     </div>
+	<br/>
     <div class="formbuilder-text form-group field-schedule">
         <label for="schedule" class="formbuilder-text-label">Schedule Link (URL)<span class="formbuilder-required">*</span><span class="tooltip-element" tooltip="Full URL including http or https">?</span></label>
-        <input type="text" placeholder="https://www.schedule.me/name" class="schedule" name="schedule" access="false" value="Full URL including https" id="schedule" title="Full URL including http or https" required="required" aria-required="true">
+        <input type="text" placeholder="https://www.schedule.me/name" class="schedule" name="schedule" access="false" value="" id="schedule" title="Full URL including http or https" required="required" aria-required="true"><br/>
+		<b><font size="2" color="#333">*Must include FULL URL with https:// before domain</b>
     </div>
-</div>
-<input type="submit" value="Submit">
+</div><br/><br/>
+<input type="submit" value="Generate Code" style="padding:20px; background: #624c77; color: #fff; font-size: 20px; font-weight: bold; width: 100%;">
 </form>
 <script>
 var getUrlParameter = function getUrlParameter(sParam) {
@@ -66,7 +75,7 @@ console.log(phone);
 console.log(email);
 console.log(schedule);
 </script>
-<div style="border: solid 2px black; padding: 50px; font-size: 10px !important;">
+<div style="border: solid 2px black; padding: 50px; font-size: 10px !important; background: #fff">
 <code>&lt;table style="border: 0px;"&gt;&lt;tr&gt;&lt;td&gt;&lt;span style="color:#624c77;font-family:'Lucida Sans Unicode',sans-serif;"&gt;Kindly,&lt;br/&gt;&lt;br/&gt;</code><span id="addshortname">Short Name</span><code>&lt;br/&gt;&lt;br/&gt;&lt;/span&gt;&lt;img src="https://s3.amazonaws.com/ss-usa/companies/MzawMLE0MzQxAgA/uploads/18_Naropa-logo-HORZ_PMS668.png" alt="Naropa University logo" width="300"&gt;&lt;br/&gt;&lt;span style="font-family:Arial; color: #624c77"&gt;&lt;b&gt;</code><span id="addfullname">Full Name</span><code>&lt;/b&gt;, </code><span id="addjobtitle">Job Title</span><code>&lt;br/&gt;&lt;b&gt;P:&lt;/b&gt; </code><span id="addphone">Phone</span><code>&lt;br/&gt;2130 Arapahoe Ave, Boulder, CO 80302&lt;br/&gt;&lt;span style="font-family:Arial; color: #624c77"&gt;&lt;a style="font-family:Arial; color: #624c77" href="https://www.facebook.com/NaropaUniversity/"&gt;Facebook&lt;a&gt; &lt;span style="color: #624c77"&gt;| &lt;/span&gt;&lt;a style="font-family:Arial; color: #624c77" href="https://twitter.com/naropau?lang=en"&gt;Twitter&lt;a&gt; &lt;span style="color: #624c77"&gt;| &lt;/span&gt;&lt;a style="font-family:Arial; color: #624c77" href="https://www.youtube.com/channel/UCt0kSop9yZYDVZjXM5n9s-g"&gt;YouTube&lt;a&gt; &lt;span style="color: #624c77"&gt;| &lt;/span&gt;&lt;a style="font-family:Arial; color: #624c77" href="https://www.instagram.com/naropau/"&gt;Instagram&lt;a&gt;&lt;br/&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style="color: #789c4a"&gt;&lt;a style="font-family:Arial; color: #789c4a" href="mailto:</code><span id="addemail">Emails</span><code>"&gt;Email Me&lt;a&gt; &lt;span style="color: #789c4a"&gt;| &lt;/span&gt;&lt;a style="font-family:Arial; color: #789c4a" href="</code><span id="addschedule">Schedule</span><code>"&gt;Schedule a Meeting&lt;a&gt; &lt;span style="color: #789c4a"&gt;| &lt;/span&gt;&lt;a style="font-family:Arial; color: #789c4a" href="https://naropauniversityscheduler.as.me/NaropaCampusTours"&gt;Visit Naropa&lt;a&gt;&lt;/span&gt;&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</code>
 </div>
 </body>
