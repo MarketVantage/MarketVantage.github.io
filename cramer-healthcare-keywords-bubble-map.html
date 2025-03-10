@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Healthcare Marketing Keywords Bubble Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #808080, #000000);
+            filter: blur(10px);
+            animation: pulse 5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        #bubble-map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <svg id="bubble-map">
+        <g id="zoom-group"></g>
+    </svg>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        // Define the static mainTopic outside the CSV loading
+        const data = {
+            mainTopic: {
+                image: "https://www.cramer.com/wp-content/themes/cramer/assets/images/cramer-health.png",
+                title: "Healthcare Marketing Keywords"
+            },
+            subTopics: [] // Will be populated from CSV
+        };
+
+        // Constants for sizing and positioning
+        const mainRadius = 600;
+        const subTopicRadius = 240;
+        const keywordRadius = 20;
+        const subTopicDistance = 1800;
+        const keywordDistance = 360;
+
+        // Text wrapping function
+        function wrapText(textElement, text, maxWidth, centerVertically = true, lineHeightMultiplier = 1.2) {
+            const fontSize = parseFloat(textElement.attr("font-size"));
+            const lineHeight = fontSize * lineHeightMultiplier;
+            const words = text.split(/\s+/).reverse();
+            let line = [];
+            const lines = [];
+
+            const tspan = textElement.append("tspan")
+                .attr("x", textElement.attr("x"))
+                .attr("dy", 0);
+
+            while (words.length > 0) {
+                const word = words.pop();
+                line.push(word);
+                tspan.text(line.join(" "));
+                if (tspan.node().getComputedTextLength() > maxWidth && line.length > 1) {
+                    line.pop();
+                    lines.push(line.join(" "));
+                    line = [word];
+                }
+            }
+            if (line.length > 0) {
+                lines.push(line.join(" "));
+            }
+
+            const n = lines.length;
+            const startDy = centerVertically ? -(n - 1) / 2 * lineHeight : 0;
+
+            textElement.selectAll("tspan").remove();
+
+            lines.forEach((line, i) => {
+                textElement.append("tspan")
+                    .attr("x", textElement.attr("x"))
+                    .attr("dy", i === 0 ? startDy : lineHeight)
+                    .text(line);
+            });
+        }
+
+        // Load and process the CSV file
+        d3.csv("kws.csv").then(function(csvData) {
+            console.log("Raw CSV data:", csvData);
+            const grouped = d3.group(csvData, d => d.Cluster);
+            console.log("Grouped data:", grouped);
+            data.subTopics = Array.from(grouped, ([name, items]) => ({
+                name: name,
+                keywords: items.map(item => item.Keyword)
+            }));
+            console.log("Subtopics:", data.subTopics);
+
+            // Calculate positions
+            const mainBubble = { x: 0, y: 0, radius: mainRadius, ...data.mainTopic };
+            const subTopics = data.subTopics.map((subTopic, i) => {
+                const angle = (i / data.subTopics.length) * 2 * Math.PI;
+                const x = subTopicDistance * Math.cos(angle);
+                const y = subTopicDistance * Math.sin(angle);
+                return { x, y, radius: subTopicRadius, name: subTopic.name, keywords: subTopic.keywords };
+            });
+            const keywords = subTopics.flatMap((subTopic, subIndex) => {
+                return subTopic.keywords.map((keyword, keyIndex) => {
+                    const angle = (keyIndex / subTopic.keywords.length) * 2 * Math.PI;
+                    const x = subTopic.x + keywordDistance * Math.cos(angle);
+                    const y = subTopic.y + keywordDistance * Math.sin(angle);
+                    return { x, y, radius: keywordRadius, text: keyword, subTopicIndex: subIndex };
+                });
+            });
+
+            // Setup SVG and zoom behavior
+            const svg = d3.select("#bubble-map");
+            const zoomGroup = svg.select("#zoom-group");
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 10])
+                .on("zoom", (event) => {
+                    zoomGroup.attr("transform", event.transform);
+                    const scale = event.transform.k;
+                    zoomGroup.selectAll(".keyword-text")
+                        .style("opacity", scale >= 1 ? 1 : 0);
+                });
+            svg.call(zoom);
+
+            // Center the map initially
+            const width = svg.node().clientWidth;
+            const height = svg.node().clientHeight;
+            const initialTransform = d3.zoomIdentity.translate(width / 2, height / 2);
+            svg.call(zoom.transform, initialTransform);
+
+            // Draw wires from main to sub-topics
+            zoomGroup.selectAll(".wire-main-to-sub")
+                .data(subTopics)
+                .enter()
+                .append("line")
+                .attr("class", "wire-main-to-sub")
+                .attr("x1", mainBubble.x)
+                .attr("y1", mainBubble.y)
+                .attr("x2", d => d.x)
+                .attr("y2", d => d.y)
+                .attr("stroke", "#ff7904")
+                .attr("stroke-width", 10);
+
+            // Draw wires from sub-topics to keywords
+            const keywordLinks = keywords.map(keyword => ({
+                source: subTopics[keyword.subTopicIndex],
+                target: keyword
+            }));
+            zoomGroup.selectAll(".wire-sub-to-keyword")
+                .data(keywordLinks)
+                .enter()
+                .append("line")
+                .attr("class", "wire-sub-to-keyword")
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y)
+                .attr("stroke", "#ff7904")
+                .attr("stroke-width", 5);
+
+            // Draw main bubble
+            const mainGroup = zoomGroup.append("g").attr("class", "main-bubble");
+            mainGroup.append("circle")
+                .attr("cx", mainBubble.x)
+                .attr("cy", mainBubble.y)
+                .attr("r", mainBubble.radius)
+                .attr("fill", "white")
+                .attr("stroke", "#ff7904")
+                .attr("stroke-width", 10);
+            mainGroup.append("image")
+                .attr("xlink:href", mainBubble.image)
+                .attr("x", mainBubble.x - 200)
+                .attr("y", mainBubble.y - 400)
+                .attr("width", 400)
+                .attr("height", 400);
+            const mainText = mainGroup.append("text")
+                .attr("x", mainBubble.x)
+                .attr("y", mainBubble.y + 60)
+                .attr("text-anchor", "middle")
+                .attr("font-family", "Montserrat, sans-serif")
+                .attr("font-size", "96px")
+                .attr("fill", "#ff7904")
+                .attr("font-weight", "bold");
+            wrapText(mainText, mainBubble.title, 2 * mainBubble.radius - 50, false);
+
+            // Draw sub-topic bubbles
+            const subTopicGroups = zoomGroup.selectAll(".sub-topic")
+                .data(subTopics)
+                .enter()
+                .append("g")
+                .attr("class", "sub-topic");
+            subTopicGroups.append("circle")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", d => d.radius)
+                .attr("fill", "white")
+                .attr("stroke", "#ff7904")
+                .attr("stroke-width", 6);
+            subTopicGroups.append("text")
+                .attr("x", d => d.x)
+                .attr("y", d => d.y)
+                .attr("text-anchor", "middle")
+                .attr("font-family", "Montserrat, sans-serif")
+                .attr("font-size", "36px")
+                .attr("fill", "#ff7904")
+		.attr("font-weight", "bold")
+                .each(function(d) {
+                    wrapText(d3.select(this), d.name, 2 * d.radius - 100, true);
+                });
+
+            // Draw keyword bubbles
+            const keywordGroups = zoomGroup.selectAll(".keyword")
+                .data(keywords)
+                .enter()
+                .append("g")
+                .attr("class", "keyword");
+            keywordGroups.append("circle")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", d => d.radius)
+                .attr("fill", "white")
+                .attr("stroke", "#ff7904")
+                .attr("stroke-width", 4);
+            keywordGroups.append("text")
+                .attr("x", d => d.x)
+                .attr("y", d => d.y)
+                .attr("text-anchor", "middle")
+                .attr("font-family", "Montserrat, sans-serif")
+                .attr("font-size", "4px")
+                .attr("fill", "#ff7904")
+                .attr("class", "keyword-text")
+                .style("opacity", 0)
+                .each(function(d) {
+                    wrapText(d3.select(this), d.text, 2 * d.radius - 20, true);
+                });
+
+        }).catch(function(error) {
+            console.error("Error loading CSV:", error);
+        });
+    </script>
+</body>
+</html>
