@@ -1,0 +1,14 @@
+button {
+    border: none;
+    border-radius: 0;
+    width: 300px;
+    max-width: 90%;
+    height: 50px;
+    text-shadow: none;
+    color: white;
+    background: orange;
+    box-shadow: none;
+    font-size: 1em;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+}
